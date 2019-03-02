@@ -1,0 +1,122 @@
+#include <Servo.h> 
+#include <EEPROM.h>
+#include <Otto.h>
+#include <Oscillator.h>
+#include <US.h>
+
+/*
+                 --------------- 
+                |     O   O     |
+                |---------------|
+RIGHT LEG 3==>  |               | <== LEFT LEG 2
+                 --------------- 
+                    ||     ||
+RIGHT FOOT 5==>   -----   ------  <== LEFT FOOT 4
+                 |-----   ------|
+*/
+
+#define PIN_LEFT_LEG   2   
+#define PIN_RIGHT_LEG  3  
+#define PIN_LEFT_FOOT  4  
+#define PIN_RIGHT_FOOT 5 
+
+#define TRIM_LEFT_LEG   0 
+#define TRIM_RIGHT_LEG  0
+#define TRIM_LEFT_FOOT  0 
+#define TRIM_RIGHT_FOOT 0
+
+Otto Otto;
+
+//-- Movement parameters
+int T=1000;              //Initial duration of movement
+int moveId=0;            //Number of movement
+int moveSize=15;         //Asociated with the height of some movements
+//---------------------------------------------------------
+bool obstacleDetected = false;
+
+void setup(){
+  //Set the servo pins
+  Otto.init(PIN_LEFT_LEG,PIN_RIGHT_LEG,PIN_LEFT_FOOT,PIN_RIGHT_FOOT,true);
+  Otto.setTrims(TRIM_LEFT_LEG,TRIM_RIGHT_LEG, TRIM_LEFT_FOOT, TRIM_RIGHT_FOOT);
+
+  
+}
+
+void loop() {
+  //-- mettre ici les fonctions
+  delay(50)
+}
+
+
+void setInitialPosition(){ //-- Code to put all 4 servos in home position (90 degrees)
+  Otto.home();
+}
+
+void avoidObstacle(){ //-- Otto will avoid obstacles with this code!
+    
+  bool obstacleDetected = false;  
+  obstacleDetected = obstacleDetector(); 
+  
+  if(obstacleDetected)
+  { 
+        Otto.sing(S_surprise); 
+        Otto.walk(7,500,BACKWARD); 
+        delay(1000);
+        Otto.sing(S_happy);
+        Otto.turn(10,500,RIGHT);                
+        delay(1000); 
+          
+   }        
+   else
+   { 
+          Otto.walk(1,500,FORWARD);  
+    }          
+}
+
+
+bool obstacleDetector() //-- Function to read distance sensor & to actualize obstacleDetected variable
+{
+   int distance = Otto.getDistance();
+      
+   if(distance<15)
+   {
+      return true;
+   }
+   else
+   {
+      return false;
+   }
+
+}
+
+void makeFollow(){
+    if(obstacleDetected){ 
+             Otto.walk(1,500,1);
+             obstacleDetector(); 
+             }        
+         else{ 
+            Otto.home();
+            obstacleDetector(); 
+        }
+}
+
+void marcherAvant(){
+  Otto.walk(1, 1000, 1);
+}
+
+void marcherArriere(){
+  Otto.walk(1, 1000, -1);
+}
+
+void tournerDroite(){
+  Otto.turn(10,500,RIGHT);                
+}
+
+void tournerGauche(){
+  Otto.turn(10,500,LEFT);                
+
+}
+
+void courir(){
+  Otto.walk(1, 500, 1);
+}
