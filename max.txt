@@ -120,3 +120,28 @@ void tournerGauche(){
 void courir(){
   Otto.walk(1, 500, 1);
 }
+////
+
+//////////////////////////////////////////////////// 
+void walkObstacle(){
+  if(obstacleDetected){ 
+               Otto.walk(1,1000,1);  //Otto.walk(1,1000,1) to make Otto follow you!
+             obstacleDetector(); 
+             }        
+         else{ 
+            Otto.home();
+            obstacleDetector(); 
+        }           
+  }  
+
+  }
+///////////////////////////////////////////////////////////////////
+//-- Function to read distance sensor & to actualize obstacleDetected variable
+void obstacleDetector(){
+   int distance = Otto.getDistance();
+        if(distance<15){
+          obstacleDetected = true;
+        }else{
+          obstacleDetected = false;
+        }
+}
